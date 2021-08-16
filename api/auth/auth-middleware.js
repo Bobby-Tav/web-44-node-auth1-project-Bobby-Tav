@@ -1,3 +1,4 @@
+const User = require('./../../api/users/users-model')
 /*
   If the user does not have a session saved in the server
 
@@ -6,8 +7,12 @@
     "message": "You shall not pass!"
   }
 */
-function restricted() {
-
+function restricted(req,res,next) {
+  if (req.session.user){
+    next()
+  }else{
+    next({status:401,message:'You shall not pass!'})
+  }
 }
 
 /*
@@ -18,8 +23,17 @@ function restricted() {
     "message": "Username taken"
   }
 */
-function checkUsernameFree() {
-
+async function checkUsernameFree(req,res,next) {
+  try{
+    const user = await User.findBy({username:req.body.username})
+    if(!user){
+      next()
+    }else{
+      next({status:422, message:"Username taken"})
+    }
+  }catch(err){
+    next(err)
+  }
 }
 
 /*
@@ -30,8 +44,17 @@ function checkUsernameFree() {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists() {
-
+async function checkUsernameExists(req,res,next) {
+  try{ 
+    const user = await User.findBy({username:req.body.username})
+    if(user.username === req.body.username){
+      next({status:401, message:"Invalid credentials"})
+    }else{
+      next()
+    }
+  }catch(err){
+    next(err)
+  }
 }
 
 /*
@@ -47,3 +70,9 @@ function checkPasswordLength() {
 }
 
 // Don't forget to add these to the `exports` object so they can be required in other modules
+module.exports = {
+restricted,
+checkUsernameFree,
+checkUsernameExists,
+checkPasswordLength
+}
