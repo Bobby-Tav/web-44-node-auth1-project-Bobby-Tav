@@ -36,7 +36,7 @@ server.use(session({
     clearInterval:1000*60*10,
     tablename:'session',
     sidfieldname:'sid'
-  })
+  }),
   cookie:{
     maxAge: 1000* 60 * 60,
     secure:false,
