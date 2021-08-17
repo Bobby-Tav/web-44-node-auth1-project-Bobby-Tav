@@ -4,7 +4,7 @@
 const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const User = require('../users/users-model')
-const {restricted,
+const {
   checkUsernameFree,
   checkUsernameExists,
   checkPasswordLength} = require('./auth-middleware')
@@ -64,7 +64,7 @@ router.post('/login',checkUsernameExists,checkPasswordLength, (req,res,next)=>{
   if (bcrypt.compareSync(password,req.user.password)){
     //Create Cookie
     req.session.user = req.user
-    res.json(`Welcome ${req.user.username}!`)
+    res.json({message:`Welcome ${req.user.username}!`})
 
   }else{
     next({status:401,message:'invalid credentials'})
